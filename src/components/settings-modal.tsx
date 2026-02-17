@@ -17,6 +17,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         gemini: s.geminiKey,
         anthropic: s.anthropicKey,
         mistral: s.mistralKey,
+        glm: s.glmKey,
     });
     const [showKeys, setShowKeys] = useState(false);
 
@@ -26,8 +27,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             gemini: s.geminiKey,
             anthropic: s.anthropicKey,
             mistral: s.mistralKey,
+            glm: s.glmKey,
         });
-    }, [s.openaiKey, s.geminiKey, s.anthropicKey, s.mistralKey, isOpen]);
+    }, [s.openaiKey, s.geminiKey, s.anthropicKey, s.mistralKey, s.glmKey, isOpen]);
 
     if (!isOpen) return null;
 
@@ -36,12 +38,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         s.setKey("gemini", keys.gemini.trim());
         s.setKey("anthropic", keys.anthropic.trim());
         s.setKey("mistral", keys.mistral.trim());
+        s.setKey("glm", keys.glm.trim());
         onClose();
     };
 
     const handleClear = () => {
         s.clearKeys();
-        setKeys({ openai: "", gemini: "", anthropic: "", mistral: "" });
+        setKeys({ openai: "", gemini: "", anthropic: "", mistral: "", glm: "" });
     };
 
     return (
@@ -99,6 +102,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         show={showKeys}
                         configured={s.mistralKey.length > 0}
                     />
+                    <KeyInput
+                        label="GLM (Zhipu AI)"
+                        value={keys.glm}
+                        onChange={(v) => setKeys({ ...keys, glm: v })}
+                        placeholder="your-glm-api-key"
+                        show={showKeys}
+                        configured={s.glmKey.length > 0}
+                    />
                     <button
                         onClick={() => setShowKeys(!showKeys)}
                         className="mt-1 text-xs text-[var(--accent-dim)] transition-colors hover:text-[var(--accent-muted)]"
@@ -116,7 +127,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     : m.provider === "gemini" ? keys.gemini.trim().length > 0
                                         : m.provider === "anthropic" ? keys.anthropic.trim().length > 0
                                             : m.provider === "mistral" ? keys.mistral.trim().length > 0
-                                                : false;
+                                                : m.provider === "glm" ? keys.glm.trim().length > 0
+                                                    : false;
                             return (
                                 <button
                                     key={m.id}

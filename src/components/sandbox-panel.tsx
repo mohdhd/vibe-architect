@@ -586,6 +586,10 @@ function repairTruncatedCode(code: string): string {
   // Build the repair suffix
   let suffix = '';
 
+  // Close unclosed string/template literals first
+  if (inTemplate) suffix += '`';
+  if (inString) suffix += stringChar;
+
   // Close unclosed JSX tags in reverse order
   for (let i = tagStack.length - 1; i >= 0; i--) {
     suffix += `\n</${tagStack[i]}>`;

@@ -83,6 +83,7 @@ Click the **⚙️ Settings** icon in the app and add your API key(s):
 | Google | Gemini 3 Pro, Gemini 3 Flash |
 | Anthropic | Claude Opus 4.6, Claude Sonnet 4.5 |
 | Mistral | Mistral Medium 3.1, Mistral Small 3.2 |
+| GLM (Zhipu AI) | GLM-5, GLM-4.7, GLM-4.7 Flash, GLM-4.6, GLM-4.6V |
 
 Keys are stored locally in your browser — they never leave your machine.
 
@@ -97,6 +98,11 @@ Keys are stored locally in your browser — they never leave your machine.
 | Claude Sonnet 4.5 | Anthropic | 64,000 |
 | Mistral Medium 3.1 | Mistral | 8,192 |
 | Mistral Small 3.2 | Mistral | 8,192 |
+| GLM-5 | GLM (Zhipu AI) | 128,000 |
+| GLM-4.7 | GLM (Zhipu AI) | 128,000 |
+| GLM-4.7 Flash | GLM (Zhipu AI) | 128,000 |
+| GLM-4.6 | GLM (Zhipu AI) | 128,000 |
+| GLM-4.6V (Vision) | GLM (Zhipu AI) | 128,000 |
 
 ## Tech Stack
 

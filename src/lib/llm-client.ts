@@ -24,6 +24,8 @@ export async function streamChat(opts: StreamChatOptions) {
             return streamAnthropic(opts);
         case "mistral":
             return streamMistral(opts);
+        case "glm":
+            return streamGLM(opts);
         default:
             opts.onError(new Error(`Unknown provider: ${config.provider}`));
     }
@@ -286,6 +288,67 @@ async function streamAnthropic(opts: StreamChatOptions) {
                     onDone();
                     return true;
                 }
+            } catch {
+                // skip malformed
+            }
+            return false;
+        });
+
+        onDone();
+    } catch (error) {
+        handleStreamError(error, onDone, onError);
+    }
+}
+
+// ─── GLM (Zhipu AI) ─────────────────────────────────────────────────────────
+
+async function streamGLM(opts: StreamChatOptions) {
+    const { messages, apiKey, model, onChunk, onDone, onError, signal } = opts;
+    const config = getModelConfig(model);
+    const sysPrompt = opts.systemPrompt ?? SYSTEM_PROMPT;
+
+    // GLM uses OpenAI-style messages format with system in the array
+    const glmMessages = [
+        { role: "system" as const, content: sysPrompt },
+        ...messages.map((m) => ({
+            role: m.role as "user" | "assistant" | "system",
+            content: m.content,
+        })),
+    ];
+
+    try {
+        const response = await fetch("https://api.z.ai/api/coding/paas/v4/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: config.apiModel ?? model,
+                messages: glmMessages,
+                stream: true,
+                max_tokens: config.maxTokens,
+                temperature: 0.8,
+            }),
+            signal,
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(
+                `GLM API error (${response.status}): ${errorBody}`
+            );
+        }
+
+        await readSSEStream(response, (data) => {
+            if (data === "[DONE]") {
+                onDone();
+                return true;
+            }
+            try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) onChunk(content);
             } catch {
                 // skip malformed
             }

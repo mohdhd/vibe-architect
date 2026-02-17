@@ -30,7 +30,7 @@ export interface Message {
 
 
 // LLM providers for text chat and the ASR+TTS pipeline
-export type LLMProvider = "openai" | "gemini" | "anthropic" | "mistral";
+export type LLMProvider = "openai" | "gemini" | "anthropic" | "mistral" | "glm";
 
 // Specific models
 export type LLMModel =
@@ -42,7 +42,12 @@ export type LLMModel =
   | "claude-opus-4.6"
   | "claude-sonnet-4.5"
   | "mistral-medium-3.1"
-  | "mistral-small-3.2";
+  | "mistral-small-3.2"
+  | "glm-4.6"
+  | "glm-4.7"
+  | "glm-4.6v"
+  | "glm-4.7-flash"
+  | "glm-5";
 
 export interface LLMModelConfig {
   id: LLMModel;
@@ -121,6 +126,41 @@ export const LLM_MODELS: LLMModelConfig[] = [
     provider: "mistral",
     maxTokens: 8192,
     apiModel: "mistral-small-latest",
+  },
+  {
+    id: "glm-5",
+    name: "GLM-5",
+    provider: "glm",
+    maxTokens: 128000,
+    apiModel: "glm-5",
+  },
+  {
+    id: "glm-4.7",
+    name: "GLM-4.7",
+    provider: "glm",
+    maxTokens: 128000,
+    apiModel: "glm-4.7",
+  },
+  {
+    id: "glm-4.7-flash",
+    name: "GLM-4.7 Flash",
+    provider: "glm",
+    maxTokens: 128000,
+    apiModel: "glm-4.7-flash",
+  },
+  {
+    id: "glm-4.6",
+    name: "GLM-4.6",
+    provider: "glm",
+    maxTokens: 128000,
+    apiModel: "glm-4.6",
+  },
+  {
+    id: "glm-4.6v",
+    name: "GLM-4.6V (Vision)",
+    provider: "glm",
+    maxTokens: 128000,
+    apiModel: "glm-4.6v",
   },
 ];
 

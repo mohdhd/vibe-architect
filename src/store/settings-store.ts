@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { LLMModel } from "@/types";
 
-type KeyProvider = "openai" | "gemini" | "anthropic" | "mistral";
+type KeyProvider = "openai" | "gemini" | "anthropic" | "mistral" | "glm";
 
 interface SettingsState {
     // API Keys
@@ -9,6 +9,7 @@ interface SettingsState {
     geminiKey: string;
     anthropicKey: string;
     mistralKey: string;
+    glmKey: string;
 
     // Model selection
     activeLLMModel: LLMModel;
@@ -23,7 +24,7 @@ interface SettingsState {
     loadFromStorage: () => void;
 
     // Helpers
-    getKeyForProvider: (provider: "openai" | "gemini" | "anthropic" | "mistral") => string;
+    getKeyForProvider: (provider: "openai" | "gemini" | "anthropic" | "mistral" | "glm") => string;
     hasKeyForModel: (model: LLMModel) => boolean;
 }
 
@@ -34,12 +35,14 @@ function computeIsConfigured(state: {
     geminiKey: string;
     anthropicKey: string;
     mistralKey: string;
+    glmKey: string;
 }): boolean {
     return (
         state.openaiKey.length > 0 ||
         state.geminiKey.length > 0 ||
         state.anthropicKey.length > 0 ||
-        state.mistralKey.length > 0
+        state.mistralKey.length > 0 ||
+        state.glmKey.length > 0
     );
 }
 
@@ -48,6 +51,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     geminiKey: "",
     anthropicKey: "",
     mistralKey: "",
+    glmKey: "",
     activeLLMModel: "gpt-5.2-high",
     isConfigured: false,
 
@@ -57,6 +61,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             gemini: "geminiKey",
             anthropic: "anthropicKey",
             mistral: "mistralKey",
+            glm: "glmKey",
         };
         const update = { [keyMap[provider]]: value };
         const state = { ...get(), ...update };
@@ -68,6 +73,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                     geminiKey: string;
                     anthropicKey: string;
                     mistralKey: string;
+                    glmKey: string;
                 }
             ),
         });
@@ -85,6 +91,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             geminiKey: "",
             anthropicKey: "",
             mistralKey: "",
+            glmKey: "",
             isConfigured: false,
         });
         localStorage.removeItem(STORAGE_KEY);
@@ -100,6 +107,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                     geminiKey: p.geminiKey || "",
                     anthropicKey: p.anthropicKey || "",
                     mistralKey: p.mistralKey || "",
+                    glmKey: p.glmKey || "",
                     activeLLMModel: p.activeLLMModel || "gpt-5.2-high",
                 };
                 set({
@@ -120,7 +128,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                 ? s.geminiKey
                 : provider === "anthropic"
                     ? s.anthropicKey
-                    : s.mistralKey;
+                    : provider === "mistral"
+                        ? s.mistralKey
+                        : s.glmKey;
     },
 
     hasKeyForModel: (model) => {
@@ -129,6 +139,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         if (model.startsWith("gemini")) return s.geminiKey.length > 0;
         if (model.startsWith("claude")) return s.anthropicKey.length > 0;
         if (model.startsWith("mistral")) return s.mistralKey.length > 0;
+        if (model.startsWith("glm")) return s.glmKey.length > 0;
         return false;
     },
 }));
@@ -142,6 +153,7 @@ function persistSettings(state: Record<string, unknown>) {
                 geminiKey: state.geminiKey,
                 anthropicKey: state.anthropicKey,
                 mistralKey: state.mistralKey,
+                glmKey: state.glmKey,
                 activeLLMModel: state.activeLLMModel,
             })
         );
